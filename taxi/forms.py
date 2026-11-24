@@ -11,7 +11,7 @@ class CarCreationForm(forms.ModelForm):
         fields = "__all__"
 
     drivers = forms.ModelMultipleChoiceField(
-        queryset=Driver.objects.all(),
+        queryset=get_user_model().objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=True
     )
@@ -33,13 +33,3 @@ class DriverLicenseUpdateForm(forms.ModelForm):
     class Meta:
         model = Driver
         fields = ("license_number",)
-
-    def clean_license_number(self):
-        license_number = self.cleaned_data.get("license_number")
-        if len(license_number) != self.LEN_LICENSE_NUMBER:
-            raise ValidationError("License must consist only of 8 characters.")
-        elif not license_number[:3].isalpha() and not license_number[:3].isupper():
-            raise ValidationError("First 3 characters must be uppercase letters.")
-        elif not license_number[3:].isnumeric():
-            raise ValidationError("Last 5 characters must be digits.")
-        return license_number
